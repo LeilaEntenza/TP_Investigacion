@@ -9,7 +9,7 @@ export default function App() {
       style={styles.input}/>    
     <TextInput
       style={styles.input}/>    
-    <Pressable style={styles.button}>a</Pressable>
+    <Pressable style={styles.button}><Text style={styles.text}>a</Text></Pressable>
       <StatusBar style="auto" />
     </View>
   );
@@ -33,6 +33,8 @@ const styles = StyleSheet.create({
   button: {
     width: 100,
     fontSize: 20,
-    textAlign: "center"
+  },
+  text: {
+    textAlign: 'center'
   }
 });
