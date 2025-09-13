@@ -1,33 +1,32 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, Pressable } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Pressable, Button } from 'react-native';
 import * as SMS from 'expo-sms';
+import { useEffect, useState } from 'react';
 
 export default function App() {
-  const sendSMSWithCallback = () => {
-    SendSMS.send(
-      {
-        body: "hola",
-        recipients: [1128055217],
-        successCallback: (wasSent) => console.log('SMS sent:', wasSent),
-        errorCallback: (error) => console.error('SMS error:', error),
-        cancelCallback: () => console.log('SMS cancelled'),
-      },
-      (completed, cancelled, error) => {
-        if (completed) console.log('SMS completed');
-        else if (cancelled) console.log('SMS cancelled');
-        else if (error) console.error('SMS error:', error);
-      }
+  const [disponible, setDisponible] = useState(false);
+  //Para que cuando corra el código checkee si está disponible el dispositivo
+  useEffect(() => {
+    async function verificarDisponibilidad() {
+      const smsDisponible = await SMS.isAvailableAsync();
+      setDisponible(smsDisponible);
+    }
+    verificarDisponibilidad();
+  }, []);
+
+  const enviarSMS = async () => {
+    //Enviar un SMS es una actividad asíncrona
+    const {respuesta} = await SMS.sendSMSAsync(
+      ['1128055217'], //Números a los que se envía
+      'Hola Lei!' //Mensaje
     );
-  };
+
+    console.log(respuesta); //Si se envió o no
+  }
   
   return (
     <View style={styles.container}>
-    <TextInput
-      keyboardType="numeric"
-      style={styles.input}/>    
-    <TextInput
-      style={styles.input}/>    
-    <Pressable style={styles.button} onClick={sendSMSWithCallback}><Text style={styles.text}>a</Text></Pressable>
+      {disponible ? <Button title="Enviar SMS" onPress={enviarSMS}/>:<Text>No se puede mandar el SMS</Text>}
       <StatusBar style="auto" />
     </View>
   );
