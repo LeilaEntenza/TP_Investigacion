@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 
 export default function App() {
   const [disponible, setDisponible] = useState(false);
+  const [telefono, setTelefono] = useState(undefined);
+  const [mensaje, setMensaje] = useState(undefined);
   //Para que cuando corra el código checkee si está disponible el dispositivo
   useEffect(() => {
     async function verificarDisponibilidad() {
@@ -26,6 +28,8 @@ export default function App() {
   
   return (
     <View style={styles.container}>
+      <TextInput keyboardType="numeric" value={telefono} placeholder='Número de teléfono' onChangeText={(value) => setTelefono(value)}/>
+      <TextInput value={mensaje} placeholder='Mensaje' onChangeText={(value) => setMensaje(value)}/>
       {disponible ? <Button title="Enviar SMS" onPress={enviarSMS}/>:<Text>No se puede mandar el SMS</Text>}
       <StatusBar style="auto" />
     </View>
