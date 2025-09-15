@@ -1,13 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, Pressable, Button } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Pressable } from 'react-native';
 import * as SMS from 'expo-sms';
 import { useEffect, useState } from 'react';
 
 export default function App() {
   const [disponible, setDisponible] = useState(false);
-  const [telefono, setTelefono] = useState(undefined);
-  const [mensaje, setMensaje] = useState(undefined);
-  //Para que cuando corra el código checkee si está disponible el dispositivo
+  const [telefono, setTelefono] = useState('');
+  const [mensaje, setMensaje] = useState('');
+
   useEffect(() => {
     async function verificarDisponibilidad() {
       const smsDisponible = await SMS.isAvailableAsync();
@@ -17,20 +17,42 @@ export default function App() {
   }, []);
 
   const enviarSMS = async () => {
-    //Enviar un SMS es una actividad asíncrona
-    const {respuesta} = await SMS.sendSMSAsync(
-      ['1128055217'], //Números a los que se envía
-      'Hola Lei!' //Mensaje
+    if (!telefono || !mensaje) {
+      return;
+    }
+
+    const { result } = await SMS.sendSMSAsync(
+      [telefono],
+      mensaje
     );
 
-    console.log(respuesta); //Si se envió o no
+    console.log(result);
   }
-  
+
   return (
     <View style={styles.container}>
-      <TextInput keyboardType="numeric" value={telefono} placeholder='Número de teléfono' onChangeText={(value) => setTelefono(value)}/>
-      <TextInput value={mensaje} placeholder='Mensaje' onChangeText={(value) => setMensaje(value)}/>
-      {disponible ? <Button title="Enviar SMS" onPress={enviarSMS}/>:<Text>No se puede mandar el SMS</Text>}
+      <TextInput
+        keyboardType="numeric"
+        value={telefono}
+        placeholder="Número de teléfono"
+        onChangeText={setTelefono}
+        style={styles.input}
+      />
+      <TextInput
+        value={mensaje}
+        placeholder="Mensaje"
+        onChangeText={setMensaje}
+        style={styles.input}
+      />
+
+      {disponible ? (
+        <Pressable style={styles.button} onPress={enviarSMS}>
+          <Text style={styles.buttonText}>Enviar SMS</Text>
+        </Pressable>
+      ) : (
+        <Text>No se puede mandar el SMS</Text>
+      )}
+
       <StatusBar style="auto" />
     </View>
   );
@@ -42,20 +64,26 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    padding: 20
   },
   input: {
+    width: '100%',
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
     paddingHorizontal: 10,
     borderRadius: 5,
-    margin: 5
+    marginBottom: 10,
   },
   button: {
-    width: 100,
-    fontSize: 20,
+    backgroundColor: '#2196F3',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
   },
-  text: {
-    textAlign: 'center'
-  }
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
 });
